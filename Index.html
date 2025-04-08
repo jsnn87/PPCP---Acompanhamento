@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -271,11 +270,13 @@
 
     /* Estado selecionado no sidebar */
     .acao-sidebar ul li.selecionado {
-      background-color: #333 !important; /* Cinza escuro */
+      background-color: #333 !important;
+      /* Cinza escuro */
     }
 
     .acao-sidebar ul li.selecionado img {
-      filter: white /* Inverte a cor da imagem para branco */
+      filter: white
+        /* Inverte a cor da imagem para branco */
     }
 
     /* Estilos para os logos das marcas */
@@ -353,7 +354,7 @@
       width: 100%;
       border-collapse: collapse;
       table-layout: auto;
-      font-size: px;
+      font-size: 24px;
     }
 
     th,
@@ -415,7 +416,7 @@
       background-color: rgba(255, 255, 255, 0.911);
       z-index: 100;
     }
-    
+
 
 
     #data-hora-registro {
@@ -425,6 +426,32 @@
       font-style: italic;
     }
 
+    /* Estilos para barras de rolagem finas e vermelhas (crimson) */
+    ::-webkit-scrollbar {
+      width: 2px;
+      /* Largura da barra de rolagem */
+      height: 2px;
+      /* Altura da barra de rolagem horizontal */
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: rgba(220, 20, 60, 0.281);
+      /* Cor da barra de rolagem com 90% de opacidade (crimson) */
+      border-radius: 4px;
+      /* Bordas arredondadas */
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(139, 0, 0, 0.9);
+      /* Cor da barra de rolagem quando está sendo arrastada (darkred) */
+    }
+
+    ::-webkit-scrollbar-track {
+      background-color: rgba(241, 241, 241, 0.9);
+      /* Cor de fundo da trilha da barra com 90% de opacidade */
+      border-radius: 4px;
+      /* Bordas arredondadas da trilha */
+    }
   </style>
 </head>
 
@@ -501,7 +528,7 @@
   </section>
 
   <section id="acao" class="page">
-    
+
     <div class="acao-container">
       <span id="data-hora-registro"></span>
       <h2 class="fixed-title">Acompanhamento Semanal</h2>
@@ -529,7 +556,7 @@
 
       <!-- Animação de carregamento -->
       <div class="loading-animation2">
-        <dotlottie-player  src="https://lottie.host/c306cfff-12a7-48cd-a5c4-5bc0f80f6003/6X1VG6ZT4B.lottie"
+        <dotlottie-player src="https://lottie.host/c306cfff-12a7-48cd-a5c4-5bc0f80f6003/6X1VG6ZT4B.lottie"
           background="transparent" speed="1" style="width: 300px; height: 300px" loop autoplay>
         </dotlottie-player>
       </div>
@@ -588,7 +615,7 @@
           loadingAnimation.style.display = "none";
         }
       }
-      
+
     }
     // Função para carregar os dados da planilha
     async function carregarDadosPlanilha2() {
@@ -641,10 +668,14 @@
       const thToggle = document.createElement("th"); // Coluna para o ícone de toggle
       thToggle.textContent = "Sub"; // Deixar vazio para o ícone
       trHead.appendChild(thToggle);
+
+      // Filtra o cabeçalho para excluir a coluna "Marca"
       cabecalho.forEach(coluna => {
-        const th = document.createElement("th");
-        th.textContent = coluna;
-        trHead.appendChild(th);
+        if (coluna !== "Marcas") { // Não adiciona a coluna "Marcas"
+          const th = document.createElement("th");
+          th.textContent = coluna;
+          trHead.appendChild(th);
+        }
       });
       thead.appendChild(trHead);
       tabela.appendChild(thead);
@@ -679,18 +710,23 @@
         trSubtotal.appendChild(tdToggle);
 
         cabecalho.forEach(coluna => {
-          const td = document.createElement("td");
-          if (coluna === "Semana") {
-            td.textContent = `Sem  ${semana}`;
-          } else if (!isNaN(parseFloat(linhasDaSemana[0][coluna]))) {
-            // Soma os valores da coluna se forem numéricos
-            const subtotal = linhasDaSemana.reduce((acc, linha) => acc + parseFloat(linha[coluna] || 0), 0);
-            td.textContent = Math.round(subtotal); // Exibe sem casas decimais
-            totalGeral[coluna] = (totalGeral[coluna] || 0) + subtotal; // Acumula para o total geral
-          } else {
-            td.textContent = "";
+          if (coluna !== "Marcas") { // Não adiciona a coluna "Marcas"
+            const td = document.createElement("td");
+            if (coluna === "Semana") {
+              td.textContent = `Sem ${semana}`;
+            } else if (!isNaN(parseFloat(linhasDaSemana[0][coluna]))) {
+              // Soma os valores da coluna se forem numéricos
+              const subtotal = linhasDaSemana.reduce((acc, linha) => acc + parseFloat(linha[coluna] || 0), 0);
+
+              // Verifica se o subtotal é 0 e não exibe
+              td.textContent = subtotal !== 0 ? Math.round(subtotal) : ''; // Não exibe se for 0
+
+              totalGeral[coluna] = (totalGeral[coluna] || 0) + subtotal; // Acumula para o total geral
+            } else {
+              td.textContent = "";
+            }
+            trSubtotal.appendChild(td);
           }
-          trSubtotal.appendChild(td);
         });
         tbody.appendChild(trSubtotal);
 
@@ -705,13 +741,16 @@
           tr.appendChild(tdEmpty);
 
           cabecalho.forEach(coluna => {
-            const td = document.createElement("td");
-            if (!isNaN(parseFloat(linha[coluna]))) {
-              td.textContent = Math.round(linha[coluna]); // Exibe sem casas decimais
-            } else {
-              td.textContent = linha[coluna];
+            if (coluna !== "Marcas") { // Não adiciona a coluna "Marcas"
+              const td = document.createElement("td");
+              if (!isNaN(parseFloat(linha[coluna]))) {
+                // Exibe apenas se o valor for diferente de 0
+                td.textContent = parseFloat(linha[coluna]) !== 0 ? Math.round(linha[coluna]) : ''; // Não exibe se for 0
+              } else {
+                td.textContent = linha[coluna];
+              }
+              tr.appendChild(td);
             }
-            tr.appendChild(td);
           });
           tbody.appendChild(tr);
         });
@@ -721,15 +760,22 @@
       const trTotal = document.createElement("tr");
       trTotal.classList.add("linha-total");
 
+      // Aplicando o estilo da cor de fundo crimson e texto branco
+      trTotal.style.backgroundColor = "crimson"; // Cor de fundo crimson
+      trTotal.style.color = "white"; // Cor do texto branca
+      trTotal.style.fontSize = "24px"; 
+
       const tdVazio = document.createElement("td");
-      tdVazio.colSpan = 4; // Ocupa quatro colunas (ícone + "Semana" + "Marcas" + "Modelos")
+      tdVazio.colSpan = 3; // Ocupa três colunas (ícone + "Semana" + "Marcas")
       tdVazio.textContent = "Total Geral";
       trTotal.appendChild(tdVazio);
 
+      // Adicionar totais das colunas relevantes até o Modelo
       cabecalho.forEach(coluna => {
-        if (coluna !== "Semana" && coluna !== "Marcas" && coluna !== "Modelos" && !isNaN(parseFloat(totalGeral[coluna]))) {
+        if (coluna !== "Marcas" && coluna !== "Semana" && coluna !== "Modelo" && !isNaN(parseFloat(totalGeral[coluna]))) {
           const td = document.createElement("td");
-          td.textContent = Math.round(totalGeral[coluna]); // Exibe sem casas decimais
+          // Verifica se o total é 0 e não exibe
+          td.textContent = totalGeral[coluna] !== 0 ? Math.round(totalGeral[coluna]) : ''; // Não exibe se for 0
           trTotal.appendChild(td);
         }
       });
@@ -743,6 +789,8 @@
       containerTabela.innerHTML = ""; // Limpa o conteúdo anterior
       containerTabela.appendChild(tabela);
     }
+
+
 
     // Função para alternar o estado de exibição das linhas de uma semana
     function toggleSemana(semana) {
