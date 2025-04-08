@@ -354,7 +354,7 @@
       width: 100%;
       border-collapse: collapse;
       table-layout: auto;
-      font-size: 24px;
+      font-size: 22px;
     }
 
     th,
@@ -693,14 +693,16 @@
       });
 
       // Preenche a tabela com os dados e subtotais
-      Object.keys(dadosPorSemana).sort((a, b) => a - b).forEach(semana => {
+      Object.keys(dadosPorSemana).sort((a, b) => a - b).forEach((semana, index) => {
         const linhasDaSemana = dadosPorSemana[semana];
 
         // Linha de subtotal
         const trSubtotal = document.createElement("tr");
         trSubtotal.setAttribute("data-semana", semana);
         trSubtotal.style.fontWeight = "bold";
-        trSubtotal.style.backgroundColor = "#f0f0f0";
+
+        // Alternar a cor de fundo entre vermelho e cinza (baseado no índice da semana)
+        trSubtotal.style.backgroundColor = (index % 2 === 0) ? "rgba(220, 20, 60, 0.2)" : "#f0f0f0"; // Tom mais fraco de vermelho
 
         const tdToggle = document.createElement("td");
         const iconToggle = document.createElement("i");
@@ -763,7 +765,7 @@
       // Aplicando o estilo da cor de fundo crimson e texto branco
       trTotal.style.backgroundColor = "crimson"; // Cor de fundo crimson
       trTotal.style.color = "white"; // Cor do texto branca
-      trTotal.style.fontSize = "24px"; 
+      trTotal.style.fontSize = "24px";
 
       const tdVazio = document.createElement("td");
       tdVazio.colSpan = 3; // Ocupa três colunas (ícone + "Semana" + "Marcas")
@@ -854,6 +856,7 @@
       carregarDadosPlanilha();
       carregarDadosPlanilha2();
     });
+
   </script>
 </body>
 
